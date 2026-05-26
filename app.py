@@ -5,6 +5,34 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+from collections import defaultdict
+import time
+
+# Rate limiting: 2 requests per IP
+if "request_counts" not in st.session_state:
+    st.session_state.request_counts = defaultdict(list)
+
+def get_ip():
+    try:
+        ip = st.context.headers.get("X-Forwarded-For", "unknown")
+        return ip.split(",")[0].strip()
+    except:
+        return "unknown"
+
+def is_rate_limited():
+    ip = get_ip()
+    now = time.time()
+    window = 24 * 60 * 60  # 24 hour window
+    # Clean old requests
+    st.session_state.request_counts[ip] = [
+        t for t in st.session_state.request_counts[ip]
+        if now - t < window
+    ]
+    if len(st.session_state.request_counts[ip]) >= 2:
+        return True
+    st.session_state.request_counts[ip].append(now)
+    return False
+
 st.set_page_config(page_title="Cover Letter Generator ✉️", page_icon="✉️")
 
 st.title("✉️ Cover Letter Generator")
@@ -39,6 +67,9 @@ if generate:
         st.stop()
     if not job_description.strip():
         st.error("Please paste a job description first.")
+        st.stop()
+    if is_rate_limited():
+        st.error("⚠️ You've used your 2 free generations for today. Come back tomorrow!")
         st.stop()
 
     with st.spinner("Writing your cover letter..."):
