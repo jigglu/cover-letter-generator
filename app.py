@@ -57,7 +57,7 @@ if generate:
 
         # Connect to Groq
         llm = ChatGroq(
-            model="llama3-8b-8192",
+            model="llama-3.3-70b-versatile",
             api_key=st.secrets["GROQ_API_KEY"]
         )
 
