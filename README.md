@@ -3,7 +3,7 @@
 Paste a job description, upload your resume, and get a tailored human-sounding cover letter in seconds.
 
 ## Live App
-[Coming soon]
+[[TRY IT OUT]](https://cover-letter-generator-w3y7yrd7dqy4amnency2gp.streamlit.app/)
 
 ## What it does
 - Upload your resume as a PDF
